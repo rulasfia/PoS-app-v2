@@ -8,14 +8,30 @@
     "start": "next start"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.4",
     "@chakra-ui/react": "^1.2.1",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
+    "axios": "^0.21.1",
     "framer-motion": "^3.2.2-rc.1",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.3",
     "next": "10.0.6",
+    "nookies": "^2.5.2",
     "nprogress": "^0.2.0",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "react-hook-form": "^6.14.2",
+    "react-query": "^3.6.0",
+    "react-table": "^7.6.3"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/mongodb": "^3.6.3",
+    "@types/node": "^14.14.22",
+    "@types/nprogress": "^0.2.0",
+    "@types/react": "^17.0.0",
+    "@types/react-table": "^7.0.28",
+    "typescript": "^4.1.3"
   }
 }

@@ -15,12 +15,12 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import type { itemType } from "../pages/gudang";
+import type { ItemType } from "../pages/gudang";
 
 interface props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: itemType) => void;
+  onSubmit: (formData: ItemType) => void;
 }
 
 const AddItem: React.FC<props> = ({ isOpen, onClose, onSubmit }) => {

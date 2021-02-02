@@ -14,13 +14,13 @@ import {
 import AddItem from "../components/AddItem";
 import GudangTable from "../components/GudangTable";
 
-export interface itemType {
+export interface ItemType {
   name: string;
   price: number;
   quantity: number;
 }
 
-export interface dbItemType extends itemType {
+export interface GudangType extends ItemType {
   _id: string;
   createdAt: string;
   updatedAt: string;
@@ -32,7 +32,7 @@ function Gudang() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
 
-  const addItemMutation = useMutation((itemInfo: itemType) =>
+  const addItemMutation = useMutation((itemInfo: ItemType) =>
     axios.post("/api/gudang/addItem", itemInfo)
   );
 
@@ -40,7 +40,7 @@ function Gudang() {
     axios.delete(`/api/gudang/deleteItem/${id}`)
   );
 
-  const onSubmit = (formData: itemType) => {
+  const onSubmit = (formData: ItemType) => {
     setIsLoading(true);
     addItemMutation.mutate(formData, {
       onError: (error) => {

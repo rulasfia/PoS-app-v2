@@ -56,10 +56,10 @@ const Navbar: React.FC = () => {
             Toko
           </MenuButton>
           <MenuList>
-            <NextLink href="/toko/riwayat">
+            <NextLink href="/toko/kasir">
               <MenuItem>Kasir</MenuItem>
             </NextLink>
-            <NextLink href="/toko/kasir">
+            <NextLink href="/toko/riwayat">
               <MenuItem>Riwayat</MenuItem>
             </NextLink>
           </MenuList>

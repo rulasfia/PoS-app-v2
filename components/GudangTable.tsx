@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useTable, useSortBy } from "react-table";
-import type { dbItemType } from "../pages/gudang";
+import type { GudangType } from "../pages/gudang";
 
 interface Props {
   data: [];
@@ -21,7 +21,7 @@ interface Props {
 }
 
 const GudangTable: React.FC<Props> = ({ data, onDelete }) => {
-  const newData = data.map((item: dbItemType, i: number) => {
+  const newData = data.map((item: GudangType, i: number) => {
     return {
       nama: item.name,
       harga: `Rp ${item.price}`,

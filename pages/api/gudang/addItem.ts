@@ -6,7 +6,9 @@ import { connectToDatabase } from "../../../utils/mongodb";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const params = {
-      ...req.body,
+      name: req.body.name,
+      price: Number(req.body.price),
+      quantity: Number(req.body.quantity),
       createdAt: new Date(),
       updatedAt: new Date(),
     };

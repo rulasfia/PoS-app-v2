@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import Moment from "react-moment";
 import {
   Table,
@@ -8,23 +8,11 @@ import {
   Th,
   Td,
   chakra,
-  Heading,
-  Flex,
-  Spacer,
-  InputGroup,
-  InputLeftAddon,
-  Input,
-  Link,
   HStack,
   Button,
 } from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon, SearchIcon } from "@chakra-ui/icons";
-import {
-  useTable,
-  useSortBy,
-  useGlobalFilter,
-  useAsyncDebounce,
-} from "react-table";
+import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { useTable, useSortBy } from "react-table";
 import type { dbItemType } from "../pages/gudang";
 
 interface Props {
@@ -36,7 +24,7 @@ const GudangTable: React.FC<Props> = ({ data, onDelete }) => {
   const newData = data.map((item: dbItemType, i: number) => {
     return {
       nama: item.name,
-      harga: item.price,
+      harga: `Rp ${item.price}`,
       jumlah: item.quantity,
       tanggal: <Moment format="DD MMM YYYY">{item.createdAt}</Moment>,
       hapus: (

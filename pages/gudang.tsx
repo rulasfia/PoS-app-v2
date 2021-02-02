@@ -5,11 +5,9 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { route } from "../utils/route";
 import {
   Button,
-  Box,
   useDisclosure,
   Flex,
   Heading,
-  Progress,
   Spacer,
   Spinner,
 } from "@chakra-ui/react";

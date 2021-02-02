@@ -39,6 +39,7 @@ const AddItem: React.FC<props> = ({ isOpen, onClose, onSubmit }) => {
             <ModalHeader>Tambah Barang</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
+              {/* Nama Barang */}
               <FormControl id="name" isRequired>
                 <FormLabel>Nama Barang</FormLabel>
                 <Input
@@ -48,6 +49,7 @@ const AddItem: React.FC<props> = ({ isOpen, onClose, onSubmit }) => {
                   ref={register({ required: true })}
                 />
               </FormControl>
+              {/* Harga Satuan */}
               <FormControl mt="4" id="price" isRequired>
                 <FormLabel>Harga Satuan</FormLabel>
                 <InputGroup>
@@ -59,15 +61,16 @@ const AddItem: React.FC<props> = ({ isOpen, onClose, onSubmit }) => {
                     ref={register({ required: true })}
                   />
                 </InputGroup>
-                <FormControl mt="4" id="quantity" isRequired>
-                  <FormLabel>Jumlah Barang</FormLabel>
-                  <Input
-                    type="number"
-                    name="quantity"
-                    placeholder="0"
-                    ref={register({ required: true })}
-                  />
-                </FormControl>
+              </FormControl>
+              {/* Jumlah Barang */}
+              <FormControl mt="4" id="quantity" isRequired>
+                <FormLabel>Jumlah Barang</FormLabel>
+                <Input
+                  type="number"
+                  name="quantity"
+                  placeholder="0"
+                  ref={register({ required: true })}
+                />
               </FormControl>
             </ModalBody>
             <ModalFooter>

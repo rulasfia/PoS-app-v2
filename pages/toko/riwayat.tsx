@@ -1,19 +1,16 @@
 import React from "react";
 import { GetServerSideProps } from "next";
-import { route } from "../utils/route";
-import { Flex, Heading } from "@chakra-ui/react";
+import { route } from "../../utils/route";
 
-function Home({ result }) {
-  console.log(`redirect to ${result}`);
-
+function Riwayat() {
   return (
-    <Flex mt="8" justify="center">
-      <Heading>Welcome to Home</Heading>
-    </Flex>
+    <div>
+      <h1>Welcome to toko riwayat</h1>
+    </div>
   );
 }
 
-export default Home;
+export default Riwayat;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const result = route(context);

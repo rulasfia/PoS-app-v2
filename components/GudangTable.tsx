@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import Moment from "react-moment";
 import {
   Table,
   Thead,
@@ -14,6 +15,8 @@ import {
   InputLeftAddon,
   Input,
   Link,
+  HStack,
+  Button,
 } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon, SearchIcon } from "@chakra-ui/icons";
 import {
@@ -24,13 +27,29 @@ import {
 } from "react-table";
 import type { dbItemType } from "../pages/gudang";
 
-const GudangTable: React.FC<{ data: [] }> = ({ data }) => {
-  const newData = data.map((item: dbItemType, i) => {
+interface Props {
+  data: [];
+  onDelete: (id: string) => void;
+}
+
+const GudangTable: React.FC<Props> = ({ data, onDelete }) => {
+  const newData = data.map((item: dbItemType, i: number) => {
     return {
       nama: item.name,
       harga: item.price,
       jumlah: item.quantity,
-      tanggal: item.createdAt,
+      tanggal: <Moment format="DD MMM YYYY">{item.createdAt}</Moment>,
+      hapus: (
+        <HStack>
+          <Button
+            colorScheme="red"
+            variant="link"
+            onClick={() => onDelete(item._id)}
+          >
+            Hapus
+          </Button>
+        </HStack>
+      ),
     };
   });
   const rowsData = useMemo(() => newData, [data]);
@@ -39,7 +58,8 @@ const GudangTable: React.FC<{ data: [] }> = ({ data }) => {
       { Header: "Nama", accessor: "nama" },
       { Header: "Harga Satuan", accessor: "harga" },
       { Header: "Jumlah Barang", accessor: "jumlah", isNumeric: true },
-      { Header: " Tanggal", accessor: "tanggal" },
+      { Header: "Tanggal", accessor: "tanggal" },
+      { Header: "Hapus", accessor: "hapus" },
     ],
     []
   );

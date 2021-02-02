@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { route } from "../utils/route";
-import { Button, Box, useDisclosure, Flex } from "@chakra-ui/react";
+import {
+  Button,
+  Box,
+  useDisclosure,
+  Flex,
+  Heading,
+  Progress,
+  Spacer,
+  Spinner,
+} from "@chakra-ui/react";
 import AddItem from "../components/AddItem";
 import GudangTable from "../components/GudangTable";
 
@@ -20,12 +29,17 @@ export interface dbItemType extends itemType {
 }
 
 function Gudang() {
-  const query = useQuery("snippets", getSnippets);
+  const queryClient = useQueryClient();
+  const query = useQuery("gudang", getGudangData);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
 
   const addItemMutation = useMutation((itemInfo: itemType) =>
-    axios.post("/api/addGudangItem", itemInfo)
+    axios.post("/api/gudang/addItem", itemInfo)
+  );
+
+  const hapusItemMutation = useMutation((id: string) =>
+    axios.delete(`/api/gudang/deleteItem/${id}`)
   );
 
   const onSubmit = (formData: itemType) => {
@@ -35,23 +49,48 @@ function Gudang() {
         console.log(error);
       },
       onSuccess: (data) => {
-        console.log(data.data);
+        queryClient.invalidateQueries("gudang");
+        setIsLoading(false);
       },
     });
 
-    setIsLoading(false);
     onClose();
+  };
+
+  const onDelete = (id: string) => {
+    setIsLoading(true);
+    hapusItemMutation.mutate(id, {
+      onError: (error) => {
+        console.log(error);
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries("gudang");
+        setIsLoading(false);
+      },
+    });
   };
 
   return (
     <>
-      <Box px="12">
-        <Button onClick={onOpen}>Tambah Barang</Button>
-        <AddItem isOpen={isOpen} onClose={onClose} onSubmit={onSubmit} />
-      </Box>
-      <Flex>
-        {query.isLoading && <h1>Loading</h1>}
-        {query.isSuccess && <GudangTable data={query.data} />}
+      <Flex align="center" my="4" mx="12">
+        <Button onClick={onOpen} mr="4" colorScheme="twitter">
+          Tambah Barang
+        </Button>
+        {isLoading ? <Spinner /> : <Spacer />}
+        <Spacer />
+      </Flex>
+
+      <AddItem isOpen={isOpen} onClose={onClose} onSubmit={onSubmit} />
+
+      <Flex mx="12">
+        {query.isLoading && (
+          <Heading w="full" textAlign="center" mt="8" fontSize="2xl">
+            Loading..
+          </Heading>
+        )}
+        {query.isSuccess && (
+          <GudangTable data={query.data} onDelete={onDelete} />
+        )}
       </Flex>
     </>
   );
@@ -59,9 +98,9 @@ function Gudang() {
 
 export default Gudang;
 
-const getSnippets = async () => {
+const getGudangData = async () => {
   try {
-    const { data } = await axios.get("/api/gudang");
+    const { data } = await axios.get("/api/gudang/gudang");
     return data;
   } catch (error) {
     console.log(error);

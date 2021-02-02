@@ -46,7 +46,7 @@ export default function Login() {
         setAlert(true);
       },
       onSuccess: (data) => {
-        console.log(data.data);
+        // console.log(data.data);
 
         setCookie(null, "jwt", data.data.token, {
           maxAge: 10 * 60 * 60,

@@ -1,13 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "../../utils/mongodb";
+import * as mongo from "mongodb";
+import { connectToDatabase } from "../../../../utils/mongodb";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { db } = await connectToDatabase();
-    const items = await db.collection("storage").find().toArray();
+    const params = { _id: new mongo.ObjectId(String(req.query.id)) };
 
-    res.status(200).json(items);
+    const result = await db.collection("storage").deleteOne(params);
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ msg: `Adding item failed. error : ${error}` });
   }

@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <Flex mb="4" px="8" py="4" align="center">
+      <Flex px="8" py="4" align="center">
         <Heading mr="8" fontSize="2xl">
           TokoIni
         </Heading>
@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
           <Link mr="4">Toko</Link>
         </NextLink>
         <Spacer />
-        <Button onClick={logoutHandler} colorScheme="red">
+        <Button onClick={logoutHandler} variant="outline" colorScheme="red">
           Log Out
         </Button>
       </Flex>

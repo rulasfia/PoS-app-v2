@@ -7,6 +7,8 @@ import {
   Input,
   Button,
   Text,
+  Box,
+  Heading,
 } from "@chakra-ui/react";
 import type {
   BarangReturn,
@@ -47,49 +49,63 @@ const KasirForm = ({
 
   return (
     <>
-      <form onSubmit={masukanKeranjang}>
-        <Flex flexDirection="column" wrap="wrap" justify="space-between">
-          {/* Nama Barang */}
-          <FormControl mb="2" id="namaBarang" isRequired>
-            <FormLabel>Nama Barang</FormLabel>
-            <Select
-              instanceId={1}
-              name="namaBarang"
-              defaultValue={barang}
-              onChange={setBarang}
-              options={gudangData}
-              // onBlur={() => setHrgSatuan(barang?.price || 0)}
-              isClearable
-              isSearchable
-            />
-          </FormControl>
+      <Box
+        color="gray.800"
+        w="40%"
+        minH="100%"
+        p="8"
+        rounded="md"
+        border="1px"
+        borderColor="gray.300"
+        _hover={{ borderColor: "gray.400" }}
+      >
+        <Heading fontSize="2xl" mb="4">
+          Tambah Data Penjualan
+        </Heading>
+        <form onSubmit={masukanKeranjang}>
+          <Flex flexDirection="column" wrap="wrap" justify="space-between">
+            {/* Nama Barang */}
+            <FormControl mb="2" id="namaBarang" isRequired>
+              <FormLabel>Nama Barang</FormLabel>
+              <Select
+                instanceId={1}
+                name="namaBarang"
+                defaultValue={barang}
+                onChange={setBarang}
+                options={gudangData}
+                // onBlur={() => setHrgSatuan(barang?.price || 0)}
+                isClearable
+                isSearchable
+              />
+            </FormControl>
 
-          {/* Jumlah Barang */}
-          <FormControl mb="2" id="jumlahBarang" isRequired>
-            <FormLabel>Jumlah Barang</FormLabel>
-            <Input
-              type="number"
-              name="jumlahBarang"
-              placeholder="0"
-              value={jmlBarang}
-              onChange={(e) => setJmlBarang(e.target?.value)}
-            />
-          </FormControl>
+            {/* Jumlah Barang */}
+            <FormControl mb="2" id="jumlahBarang" isRequired>
+              <FormLabel>Jumlah Barang</FormLabel>
+              <Input
+                type="number"
+                name="jumlahBarang"
+                placeholder="0"
+                value={jmlBarang}
+                onChange={(e) => setJmlBarang(e.target?.value)}
+              />
+            </FormControl>
 
-          {/* Harga Satuan */}
-          <Text fontWeight="bold" my="2">
-            Harga Satuan : {barang?.price || 0}
-          </Text>
+            {/* Harga Satuan */}
+            <Text fontWeight="bold" my="2">
+              Harga Satuan : {barang?.price || 0}
+            </Text>
 
-          {/* Jumlah Harga */}
-          <Text fontWeight="bold" my="2">
-            Jumlah Harga : {Number(jmlBarang) * barang?.price || 0}
-          </Text>
-        </Flex>
-        <Button w="full" colorScheme="twitter" mt="4" type="submit">
-          Tambah ke Keranjang
-        </Button>
-      </form>
+            {/* Jumlah Harga */}
+            <Text fontWeight="bold" my="2">
+              Jumlah Harga : {Number(jmlBarang) * barang?.price || 0}
+            </Text>
+          </Flex>
+          <Button w="full" colorScheme="twitter" mt="4" type="submit">
+            Tambah ke Keranjang
+          </Button>
+        </form>
+      </Box>
     </>
   );
 };

@@ -2,7 +2,7 @@ import { GetServerSideProps } from "next";
 import React, { useState } from "react";
 import axios from "axios";
 import Select from "react-select";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { route } from "../../utils/route";
 import {
   Box,
@@ -21,6 +21,7 @@ import {
 import type { GudangType } from "../gudang";
 import KasirForm from "../../components/KasirForm";
 import KeranjangList from "../../components/KeranjangList";
+import KasirTransaksi from "../../components/KasirTransaksi";
 
 const URL = process.env.URL || "http://localhost:3000";
 
@@ -69,6 +70,12 @@ const Kasir: React.FC<{ gudangData: BarangReturn }> = ({ gudangData }) => {
   const [pembayaran, setPembayaran] = useState<number | string>(0);
   const [kembalian, setKembalian] = useState(0);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Riwayat Mutation
+  const addRiwayatMutation = useMutation((riwayatInfo: RiwayatBelanja) =>
+    axios.post(`${URL}/api/toko/addRiwayat`, riwayatInfo)
+  );
 
   // Hapus semua
   const hapusSemua = () => {
@@ -99,122 +106,63 @@ const Kasir: React.FC<{ gudangData: BarangReturn }> = ({ gudangData }) => {
 
   // Handle Pembayaran
   const handleBayar = () => {
-    setRiwayat({
-      daftarBelanja: [],
-      totalBelanja: 0,
-      nominalPembayaran: 0,
-      nominalKembalian: 0,
-    });
-
+    setIsLoading(true);
     // Mutation here
-    setKeranjang([]);
-    setSumPrice(0);
-    setPembayaran(0);
-    setKembalian(0);
-    setIsConfirmed(false);
+    addRiwayatMutation.mutate(riwayat, {
+      onError: (error) => {
+        console.log(error);
+        alert("Transaksi gagal");
+        setIsLoading(false);
+      },
+      onSuccess: (data) => {
+        console.log(data.data);
+        setRiwayat({
+          daftarBelanja: [],
+          totalBelanja: 0,
+          nominalPembayaran: 0,
+          nominalKembalian: 0,
+        });
+
+        setKeranjang([]);
+        setSumPrice(0);
+        setPembayaran(0);
+        setKembalian(0);
+        setIsConfirmed(false);
+        setIsLoading(false);
+      },
+    });
   };
 
   console.log(riwayat);
   return (
     <HStack align="start" mx="12" my="4" spacing="8">
       {/* Tambah Barang Form */}
-      <Box
-        color="gray.800"
-        w="40%"
-        minH="100%"
-        p="8"
-        rounded="md"
-        border="1px"
-        borderColor="gray.300"
-        _hover={{ borderColor: "gray.400" }}
-      >
-        <Heading fontSize="2xl" mb="4">
-          Tambah Data Penjualan
-        </Heading>
-        <KasirForm
-          keranjang={keranjang}
-          setRiwayat={setRiwayat}
-          setKeranjang={setKeranjang}
-          gudangData={gudangData}
-          price={{ sumPrice, setSumPrice }}
-        />
-      </Box>
+      <KasirForm
+        keranjang={keranjang}
+        setRiwayat={setRiwayat}
+        setKeranjang={setKeranjang}
+        gudangData={gudangData}
+        price={{ sumPrice, setSumPrice }}
+      />
 
       <VStack w="full" mt="4" spacing="4">
         {/* Keranjang */}
-        <Box
-          w="full"
-          p="8"
-          color="gray.800"
-          rounded="md"
-          border="1px"
-          borderColor="gray.300"
-          _hover={{ borderColor: "gray.400" }}
-        >
-          <KeranjangList
-            keranjang={keranjang}
-            hapusItem={hapusItem}
-            hapusSemua={hapusSemua}
-          />
-        </Box>
-        {/* Transaksi */}
-        <Box
-          w="full"
-          p="8"
-          color="gray.800"
-          rounded="md"
-          border="1px"
-          borderColor="gray.300"
-          _hover={{ borderColor: "gray.400" }}
-        >
-          <Table>
-            <Tbody>
-              <Tr>
-                <Td>Total Belanja</Td>
-                <Td>Rp {sumPrice}</Td>
-                <Td isNumeric>
-                  <Spacer />
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>Pembayaran</Td>
-                <Td>
-                  <Input
-                    variant="filled"
-                    type="number"
-                    name="jumlahBarang"
-                    placeholder="0"
-                    value={pembayaran}
-                    onChange={(e) => setPembayaran(e.target?.value)}
-                  />
-                </Td>
-                <Td isNumeric>
-                  <Button
-                    onClick={handleConfirm}
-                    variant="outline"
-                    colorScheme="twitter"
-                  >
-                    Konfirmasi
-                  </Button>
-                </Td>
-              </Tr>
+        <KeranjangList
+          keranjang={keranjang}
+          hapusItem={hapusItem}
+          hapusSemua={hapusSemua}
+        />
 
-              <Tr>
-                <Td>Kembalian</Td>
-                <Td>Rp {kembalian}</Td>
-                <Td isNumeric>
-                  <Button
-                    isDisabled={!isConfirmed}
-                    colorScheme="twitter"
-                    onClick={handleBayar}
-                  >
-                    Bayar
-                  </Button>
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </Box>
+        {/* Transaksi */}
+        <KasirTransaksi
+          sumPrice={sumPrice}
+          bayar={{ pembayaran, setPembayaran }}
+          kembalian={kembalian}
+          handleConfirm={handleConfirm}
+          handleBayar={handleBayar}
+          isConfirmed={isConfirmed}
+          isLoading={isLoading}
+        />
       </VStack>
     </HStack>
   );

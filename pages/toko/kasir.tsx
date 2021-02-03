@@ -23,7 +23,7 @@ import KasirForm from "../../components/KasirForm";
 import KeranjangList from "../../components/KeranjangList";
 import KasirTransaksi from "../../components/KasirTransaksi";
 
-const URL = process.env.URL || "http://localhost:3000";
+const URL = process.env.URL;
 
 export interface FormData {
   hargaSatuan: number;

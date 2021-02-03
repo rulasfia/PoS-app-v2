@@ -14,7 +14,7 @@ import {
 import RiwayatTable from "../../components/RiwayatTable";
 import type { RiwayatBelanja } from "./kasir";
 
-const URL = process.env.URL || "http://localhost:3000";
+const URL = process.env.URL;
 
 export interface RiwayatType extends RiwayatBelanja {
   _id: string;

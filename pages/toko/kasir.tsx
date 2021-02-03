@@ -3,32 +3,34 @@ import React, { useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
 import { route } from "../../utils/route";
 import {
   Box,
   Button,
-  Flex,
-  FormControl,
-  FormLabel,
+  Table,
+  Tbody,
+  Tr,
+  Td,
   Heading,
+  HStack,
+  Text,
+  VStack,
   Input,
+  Spacer,
 } from "@chakra-ui/react";
 import type { GudangType } from "../gudang";
+import KasirForm from "../../components/KasirForm";
+import KeranjangList from "../../components/KeranjangList";
 
 const URL = process.env.URL || "http://localhost:3000";
 
-interface Props {
-  gudangData: GudangType[];
-}
-
-interface FormData {
+export interface FormData {
   hargaSatuan: number;
   jumlahBarang: number;
   jumlahHarga: number;
 }
 
-interface BarangReturn {
+export interface BarangReturn {
   id: string;
   label: string;
   value: string;
@@ -36,100 +38,185 @@ interface BarangReturn {
   qty: number;
 }
 
-const Kasir = ({ gudangData }) => {
+export interface Keranjang {
+  addedAt: Date;
+  namaBarang: string;
+  jumlahBarang: number;
+  hargaSatuan: number;
+  jumlahHarga: number;
+}
+
+export interface RiwayatBelanja {
+  daftarBelanja: Array<Keranjang>;
+  totalBelanja: number;
+  nominalPembayaran: number;
+  nominalKembalian: number;
+}
+
+const Kasir: React.FC<{ gudangData: BarangReturn }> = ({ gudangData }) => {
   const { data } = useQuery("gudangData", getGudangData, {
     initialData: gudangData,
   });
-  console.log(data);
 
-  const { handleSubmit, errors, register, watch } = useForm();
-  const [barang, setBarang] = useState<BarangReturn>();
-  const [jmlHarga, setJmlHarga] = useState<number>(0);
-  const watchJmlBarang = watch("jumlahBarang", 0);
+  const [keranjang, setKeranjang] = useState<Keranjang[]>([]);
+  const [riwayat, setRiwayat] = useState<RiwayatBelanja>({
+    daftarBelanja: [],
+    totalBelanja: 0,
+    nominalPembayaran: 0,
+    nominalKembalian: 0,
+  });
+  const [sumPrice, setSumPrice] = useState(0);
+  const [pembayaran, setPembayaran] = useState<number | string>(0);
+  const [kembalian, setKembalian] = useState(0);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const onSubmit = (formData: FormData) => {
-    const item = {
-      namaBarang: barang?.value,
-      jumlahBarang: Number(formData.jumlahBarang),
-      hargaSatuan: Number(formData.hargaSatuan),
-      jumlahHarga: Number(formData.jumlahHarga),
-    };
-    console.log(item);
+  // Hapus semua
+  const hapusSemua = () => {
+    setKeranjang([]);
+    setSumPrice(0);
   };
 
+  // Hapus 1 item
+  const hapusItem = (date: Date) => {
+    setKeranjang(keranjang.filter((item) => item.addedAt !== date));
+    const deletedItem: Keranjang[] = keranjang.filter(
+      (item) => item.addedAt === date
+    );
+    setSumPrice(sumPrice - deletedItem[0].jumlahHarga);
+  };
+
+  // Konfirmasi daftar pembelian
+  const handleConfirm = () => {
+    setKembalian(Number(pembayaran) - sumPrice);
+    setRiwayat({
+      daftarBelanja: keranjang,
+      totalBelanja: sumPrice,
+      nominalPembayaran: Number(pembayaran),
+      nominalKembalian: Number(pembayaran) - sumPrice,
+    });
+    setIsConfirmed(true);
+  };
+
+  // Handle Pembayaran
+  const handleBayar = () => {
+    setRiwayat({
+      daftarBelanja: [],
+      totalBelanja: 0,
+      nominalPembayaran: 0,
+      nominalKembalian: 0,
+    });
+
+    // Mutation here
+    setKeranjang([]);
+    setSumPrice(0);
+    setPembayaran(0);
+    setKembalian(0);
+    setIsConfirmed(false);
+  };
+
+  console.log(riwayat);
   return (
-    <Box
-      color="gray.800"
-      w="50%"
-      mx="auto"
-      my="4"
-      p="8"
-      rounded="md"
-      border="1px"
-      borderColor="gray.300"
-      _hover={{ borderColor: "gray.400" }}
-    >
-      <Heading fontSize="2xl" mb="4">
-        Tambah Data Penjualan
-      </Heading>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Flex wrap="wrap" justify="space-between">
-          {/* Nama Barang */}
-          <FormControl w="45%" mb="2" id="namaBarang" isRequired>
-            <FormLabel>Nama Barang</FormLabel>
-            <Select
-              defaultValue={barang}
-              onChange={setBarang}
-              options={gudangData}
-              isClearable
-              isSearchable
-              name="namaBarang"
-            />
-          </FormControl>
+    <HStack align="start" mx="12" my="4" spacing="8">
+      {/* Tambah Barang Form */}
+      <Box
+        color="gray.800"
+        w="40%"
+        minH="100%"
+        p="8"
+        rounded="md"
+        border="1px"
+        borderColor="gray.300"
+        _hover={{ borderColor: "gray.400" }}
+      >
+        <Heading fontSize="2xl" mb="4">
+          Tambah Data Penjualan
+        </Heading>
+        <KasirForm
+          keranjang={keranjang}
+          setRiwayat={setRiwayat}
+          setKeranjang={setKeranjang}
+          gudangData={gudangData}
+          price={{ sumPrice, setSumPrice }}
+        />
+      </Box>
 
-          {/* Jumlah Barang */}
-          <FormControl w="45%" mb="2" id="jumlahBarang" isRequired>
-            <FormLabel>Jumlah Barang</FormLabel>
-            <Input
-              type="number"
-              name="jumlahBarang"
-              placeholder="0"
-              ref={register({ required: true })}
-            />
-          </FormControl>
+      <VStack w="full" mt="4" spacing="4">
+        {/* Keranjang */}
+        <Box
+          w="full"
+          p="8"
+          color="gray.800"
+          rounded="md"
+          border="1px"
+          borderColor="gray.300"
+          _hover={{ borderColor: "gray.400" }}
+        >
+          <KeranjangList
+            keranjang={keranjang}
+            hapusItem={hapusItem}
+            hapusSemua={hapusSemua}
+          />
+        </Box>
+        {/* Transaksi */}
+        <Box
+          w="full"
+          p="8"
+          color="gray.800"
+          rounded="md"
+          border="1px"
+          borderColor="gray.300"
+          _hover={{ borderColor: "gray.400" }}
+        >
+          <Table>
+            <Tbody>
+              <Tr>
+                <Td>Total Belanja</Td>
+                <Td>Rp {sumPrice}</Td>
+                <Td isNumeric>
+                  <Spacer />
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>Pembayaran</Td>
+                <Td>
+                  <Input
+                    variant="filled"
+                    type="number"
+                    name="jumlahBarang"
+                    placeholder="0"
+                    value={pembayaran}
+                    onChange={(e) => setPembayaran(e.target?.value)}
+                  />
+                </Td>
+                <Td isNumeric>
+                  <Button
+                    onClick={handleConfirm}
+                    variant="outline"
+                    colorScheme="twitter"
+                  >
+                    Konfirmasi
+                  </Button>
+                </Td>
+              </Tr>
 
-          {/* Harga Satuan */}
-          <FormControl w="45%" mb="2" id="hargaSatuan" isReadOnly>
-            <FormLabel>Harga Satuan</FormLabel>
-            <Input
-              type="number"
-              name="hargaSatuan"
-              placeholder="0"
-              defaultValue={barang?.price ? barang?.price : "0"}
-              ref={register({ required: true })}
-            />
-          </FormControl>
-
-          {/* Jumlah Harga */}
-          <FormControl w="45%" mb="2" id="jumlahHarga" isReadOnly>
-            <FormLabel>Jumlah Harga</FormLabel>
-            <Input
-              type="number"
-              name="jumlahHarga"
-              defaultValue={
-                watch("jumlahBarang", 0) > 0
-                  ? barang?.price * watch("jumlahBarang", 0)
-                  : "0"
-              }
-              ref={register({ required: true })}
-            />
-          </FormControl>
-        </Flex>
-        <Button colorScheme="twitter" mt="4" type="submit">
-          Submit
-        </Button>
-      </form>
-    </Box>
+              <Tr>
+                <Td>Kembalian</Td>
+                <Td>Rp {kembalian}</Td>
+                <Td isNumeric>
+                  <Button
+                    isDisabled={!isConfirmed}
+                    colorScheme="twitter"
+                    onClick={handleBayar}
+                  >
+                    Bayar
+                  </Button>
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </Box>
+      </VStack>
+    </HStack>
   );
 };
 

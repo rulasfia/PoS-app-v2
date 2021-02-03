@@ -101,7 +101,6 @@ export default function Login() {
             </FormControl>
             <Button
               isLoading={isLoading}
-              loadingText="Loging in"
               w="full"
               mt="2"
               colorScheme="twitter"

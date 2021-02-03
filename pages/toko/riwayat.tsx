@@ -3,8 +3,17 @@ import { GetServerSideProps } from "next";
 import { route } from "../../utils/route";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { Heading, HStack, VStack } from "@chakra-ui/react";
+import RiwayatTable from "../../components/RiwayatTable";
+import type { RiwayatBelanja } from "./kasir";
 
 const URL = process.env.URL || "http://localhost:3000";
+
+export interface RiwayatType extends RiwayatBelanja {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 function Riwayat({ riwayatData }) {
   const { data } = useQuery("gudangData", getRiwayatData, {
@@ -13,9 +22,12 @@ function Riwayat({ riwayatData }) {
   console.log(data);
 
   return (
-    <div>
-      <h1>Welcome to toko riwayat</h1>
-    </div>
+    <>
+      <VStack align="start" mx="12" my="4" spacing="8">
+        <Heading fontSize="2xl">Riwayat Transaksi</Heading>
+        <RiwayatTable data={riwayatData} onDelete={undefined} />
+      </VStack>
+    </>
   );
 }
 

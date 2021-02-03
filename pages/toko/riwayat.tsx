@@ -14,7 +14,10 @@ import {
 import RiwayatTable from "../../components/RiwayatTable";
 import type { RiwayatBelanja } from "./kasir";
 
-const URL = process.env.URL;
+const URL =
+  process.env.NODE_ENV === "production"
+    ? "https://posv2.vercel.app"
+    : "http://localhost:3000";
 
 export interface RiwayatType extends RiwayatBelanja {
   _id: string;

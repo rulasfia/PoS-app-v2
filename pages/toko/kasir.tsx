@@ -23,7 +23,10 @@ import KasirForm from "../../components/KasirForm";
 import KeranjangList from "../../components/KeranjangList";
 import KasirTransaksi from "../../components/KasirTransaksi";
 
-const URL = process.env.URL;
+const URL =
+  process.env.NODE_ENV === "production"
+    ? "https://posv2.vercel.app"
+    : "http://localhost:3000";
 
 export interface FormData {
   hargaSatuan: number;

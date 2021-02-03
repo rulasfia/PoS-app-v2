@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { GetServerSideProps } from "next";
 import { route } from "../../utils/route";
 import axios from "axios";
-import { useQuery } from "react-query";
-import { Heading, HStack, VStack } from "@chakra-ui/react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  Flex,
+  Heading,
+  HStack,
+  Spacer,
+  Spinner,
+  VStack,
+} from "@chakra-ui/react";
 import RiwayatTable from "../../components/RiwayatTable";
 import type { RiwayatBelanja } from "./kasir";
 
@@ -16,16 +23,42 @@ export interface RiwayatType extends RiwayatBelanja {
 }
 
 function Riwayat({ riwayatData }) {
-  const { data } = useQuery("gudangData", getRiwayatData, {
+  const queryClient = useQueryClient();
+  const { data } = useQuery("riwayatData", getRiwayatData, {
     initialData: riwayatData,
   });
+  const [isLoading, setIsLoading] = useState(false);
+
   console.log(data);
+
+  const hapusRiwayatMutation = useMutation((id: string) =>
+    axios.delete(`/api/toko/deleteRiwayat/${id}`)
+  );
+
+  const onDelete = (id: string) => {
+    setIsLoading(true);
+    hapusRiwayatMutation.mutate(id, {
+      onError: (error) => {
+        console.log(error);
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries("riwayatData");
+        setIsLoading(false);
+      },
+    });
+  };
 
   return (
     <>
       <VStack align="start" mx="12" my="4" spacing="8">
-        <Heading fontSize="2xl">Riwayat Transaksi</Heading>
-        <RiwayatTable data={riwayatData} onDelete={undefined} />
+        <Flex>
+          <Heading mr="4" fontSize="2xl">
+            Riwayat Transaksi
+          </Heading>
+          {isLoading ? <Spinner /> : <Spacer />}
+          <Spacer />
+        </Flex>
+        <RiwayatTable data={data} onDelete={onDelete} />
       </VStack>
     </>
   );

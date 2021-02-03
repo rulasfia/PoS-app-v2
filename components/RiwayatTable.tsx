@@ -50,7 +50,7 @@ const RiwayatTable: React.FC<Props> = ({ data, onDelete }) => {
           <Button
             colorScheme="red"
             variant="link"
-            // onClick={() => onDelete(riwayat._id)}
+            onClick={() => onDelete(riwayat._id)}
           >
             Hapus
           </Button>

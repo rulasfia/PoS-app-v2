@@ -44,7 +44,7 @@ const GudangTable: React.FC<Props> = ({ data, onDelete }) => {
   const columns = useMemo(
     () => [
       { Header: "Nama", accessor: "nama" },
-      { Header: "Harga Satuan", accessor: "harga" },
+      { Header: "Harga Satuan", accessor: "harga", isNumeric: true },
       { Header: "Jumlah Barang", accessor: "jumlah", isNumeric: true },
       { Header: "Tanggal", accessor: "tanggal" },
       { Header: "Hapus", accessor: "hapus" },

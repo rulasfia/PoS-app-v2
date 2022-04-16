@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getServerGudangData } from "./api/gudang/gudang";
 import { route } from "../utils/route";
 import {
   Button,
@@ -26,9 +27,11 @@ export interface GudangType extends ItemType {
   updatedAt: string;
 }
 
-function Gudang() {
+function Gudang({ data }) {
   const queryClient = useQueryClient();
-  const query = useQuery("gudang", getGudangData);
+  const query = useQuery("gudang", getGudangData, {
+    initialData: JSON.parse(data),
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -114,7 +117,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {},
     };
   }
+
+  const data = await getServerGudangData();
   return {
-    props: { result },
+    props: { result, data: JSON.stringify(data) },
   };
 };

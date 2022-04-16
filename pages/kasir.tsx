@@ -1,32 +1,14 @@
 import { GetServerSideProps } from "next";
 import React, { useState } from "react";
 import axios from "axios";
-import Select from "react-select";
-import { useMutation, useQuery } from "react-query";
-import { route } from "../../utils/route";
-import {
-  Box,
-  Button,
-  Table,
-  Tbody,
-  Tr,
-  Td,
-  Heading,
-  HStack,
-  Text,
-  VStack,
-  Input,
-  Spacer,
-} from "@chakra-ui/react";
-import type { GudangType } from "../gudang";
-import KasirForm from "../../components/KasirForm";
-import KeranjangList from "../../components/KeranjangList";
-import KasirTransaksi from "../../components/KasirTransaksi";
-
-const URL =
-  process.env.NODE_ENV === "production"
-    ? "https://posv2.vercel.app"
-    : "http://localhost:3000";
+import { useMutation } from "react-query";
+import { route } from "../utils/route";
+import { VStack, HStack } from "@chakra-ui/react";
+import type { GudangType } from "./gudang";
+import KasirForm from "../components/KasirForm";
+import KeranjangList from "../components/KeranjangList";
+import KasirTransaksi from "../components/KasirTransaksi";
+import { getServerGudangData } from "./api/gudang/gudang";
 
 export interface FormData {
   hargaSatuan: number;
@@ -57,9 +39,18 @@ export interface RiwayatBelanja {
   nominalKembalian: number;
 }
 
-const Kasir: React.FC<{ gudangData: BarangReturn }> = ({ gudangData }) => {
-  const { data } = useQuery("gudangData", getGudangData, {
-    initialData: gudangData,
+const Kasir = ({ gudangData: data }) => {
+  const gudangData = JSON.parse(data).map((item: GudangType) => {
+    const label =
+      item.name[0].toUpperCase() + item.name.substring(1).toLowerCase();
+
+    return {
+      id: item._id,
+      label: `${label} (${item.quantity})`,
+      value: item.name,
+      price: item.price,
+      qty: item.quantity,
+    };
   });
 
   const [keranjang, setKeranjang] = useState<Keranjang[]>([]);
@@ -77,7 +68,7 @@ const Kasir: React.FC<{ gudangData: BarangReturn }> = ({ gudangData }) => {
 
   // Riwayat Mutation
   const addRiwayatMutation = useMutation((riwayatInfo: RiwayatBelanja) =>
-    axios.post(`${URL}/api/toko/addRiwayat`, riwayatInfo)
+    axios.post(`/api/toko/addRiwayat`, riwayatInfo)
   );
 
   // Hapus semua
@@ -173,27 +164,6 @@ const Kasir: React.FC<{ gudangData: BarangReturn }> = ({ gudangData }) => {
 
 export default Kasir;
 
-const getGudangData = async () => {
-  try {
-    const { data } = await axios.get(`${URL}/api/gudang/gudang`);
-    const gudangData = data.map((item: GudangType) => {
-      const label =
-        item.name[0].toUpperCase() + item.name.substring(1).toLowerCase();
-
-      return {
-        id: item._id,
-        label: `${label} (${item.quantity})`,
-        value: item.name,
-        price: item.price,
-        qty: item.quantity,
-      };
-    });
-    return gudangData;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const result = route(context);
   if (result !== "") {
@@ -204,9 +174,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const APIdata = await getGudangData();
+  const data = await getServerGudangData();
 
   return {
-    props: { gudangData: APIdata },
+    props: { gudangData: JSON.stringify(data) },
   };
 };

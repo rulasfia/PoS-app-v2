@@ -1,23 +1,12 @@
 import React, { useState } from "react";
 import { GetServerSideProps } from "next";
-import { route } from "../../utils/route";
+import { route } from "../utils/route";
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import {
-  Flex,
-  Heading,
-  HStack,
-  Spacer,
-  Spinner,
-  VStack,
-} from "@chakra-ui/react";
-import RiwayatTable from "../../components/RiwayatTable";
+import { Flex, Heading, Spacer, Spinner, VStack } from "@chakra-ui/react";
+import RiwayatTable from "../components/RiwayatTable";
 import type { RiwayatBelanja } from "./kasir";
-
-const URL =
-  process.env.NODE_ENV === "production"
-    ? "https://posv2.vercel.app"
-    : "http://localhost:3000";
+import { getServerRiwayatData } from "./api/toko/riwayat";
 
 export interface RiwayatType extends RiwayatBelanja {
   _id: string;
@@ -28,11 +17,9 @@ export interface RiwayatType extends RiwayatBelanja {
 function Riwayat({ riwayatData }) {
   const queryClient = useQueryClient();
   const { data } = useQuery("riwayatData", getRiwayatData, {
-    initialData: riwayatData,
+    initialData: JSON.parse(riwayatData),
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  console.log(data);
 
   const hapusRiwayatMutation = useMutation((id: string) =>
     axios.delete(`/api/toko/deleteRiwayat/${id}`)
@@ -71,7 +58,7 @@ export default Riwayat;
 
 const getRiwayatData = async () => {
   try {
-    const { data } = await axios.get(`${URL}/api/toko/riwayat`);
+    const { data } = await axios.get(`/api/toko/riwayat`);
     return data;
   } catch (error) {
     console.log(error);
@@ -88,9 +75,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const riwayatData = await getRiwayatData();
-
+  const data = await getServerRiwayatData();
   return {
-    props: { riwayatData },
+    props: { riwayatData: JSON.stringify(data) },
   };
 };

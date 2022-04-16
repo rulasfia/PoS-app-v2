@@ -43,27 +43,17 @@ const Navbar: React.FC = () => {
           </Button>
         </NextLink>
 
-        {/* Toko Menu */}
-        <Menu>
-          <MenuButton
-            variant="link"
-            color="gray.900"
-            p="2"
-            mr="4"
-            as={Button}
-            rightIcon={<ChevronDownIcon />}
-          >
-            Toko
-          </MenuButton>
-          <MenuList>
-            <NextLink href="/toko/kasir">
-              <MenuItem>Kasir</MenuItem>
-            </NextLink>
-            <NextLink href="/toko/riwayat">
-              <MenuItem>Riwayat</MenuItem>
-            </NextLink>
-          </MenuList>
-        </Menu>
+        <NextLink href="/kasir">
+          <Button variant="link" color="gray.900" p="2" mr="4">
+            Kasir
+          </Button>
+        </NextLink>
+
+        <NextLink href="/riwayat">
+          <Button variant="link" color="gray.900" p="2" mr="4">
+            Riwayat
+          </Button>
+        </NextLink>
 
         <Spacer />
         {/* Log Out */}

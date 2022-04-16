@@ -10,11 +10,7 @@ import {
   Box,
   Heading,
 } from "@chakra-ui/react";
-import type {
-  BarangReturn,
-  Keranjang,
-  RiwayatBelanja,
-} from "../pages/toko/kasir";
+import type { BarangReturn, Keranjang, RiwayatBelanja } from "../pages/kasir";
 import { useForm } from "react-hook-form";
 
 const KasirForm = ({

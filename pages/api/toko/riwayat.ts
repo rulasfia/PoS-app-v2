@@ -4,11 +4,16 @@ import { connectToDatabase } from "../../../utils/mongodb";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { db } = await connectToDatabase();
-    const histories = await db.collection("histories").find().toArray();
-
+    const histories = await getServerRiwayatData();
     res.status(200).json(histories);
   } catch (error) {
     res.status(500).json({ msg: `Adding item failed. error : ${error}` });
   }
+};
+
+export const getServerRiwayatData = async () => {
+  const { db } = await connectToDatabase();
+  const histories = await db.collection("histories").find().toArray();
+
+  return histories;
 };

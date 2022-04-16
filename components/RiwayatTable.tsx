@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useTable, useSortBy } from "react-table";
-import type { RiwayatType } from "../pages/toko/riwayat";
+import type { RiwayatType } from "../pages/riwayat";
 
 interface Props {
   data: [];

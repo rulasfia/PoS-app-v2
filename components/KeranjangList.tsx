@@ -14,7 +14,7 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import type { Keranjang, RiwayatBelanja } from "../pages/toko/kasir";
+import type { Keranjang, RiwayatBelanja } from "../pages/kasir";
 
 interface Props {
   keranjang?: any;

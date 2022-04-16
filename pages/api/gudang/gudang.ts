@@ -14,6 +14,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 export const getServerGudangData = async () => {
   const { db } = await connectToDatabase();
   const items = await db.collection("storage").find().toArray();
-  console.log({ items });
+
   return items;
 };
